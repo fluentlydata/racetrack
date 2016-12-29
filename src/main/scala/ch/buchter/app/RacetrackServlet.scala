@@ -3,7 +3,7 @@ import org.scalatra._
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
 
-import data.PlayerData
+import model._
 
 class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
 
@@ -19,6 +19,11 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
 
 	get("/player") {
 		PlayerData.all
+	}
+
+	get("/start") {
+		// call controller -> add a par per player
+		// and start the game
 	}
 }
 

@@ -1,4 +1,4 @@
-package data
+package model
 
 case class Player(name: String, token: String)
 
