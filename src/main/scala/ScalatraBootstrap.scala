@@ -1,4 +1,4 @@
-import ch.buchter.app._
+import racetrack._
 import org.scalatra._
 import javax.servlet.ServletContext
 

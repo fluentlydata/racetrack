@@ -5,8 +5,15 @@ case class Player(name: String, token: String)
 object PlayerData {
 	var all: List[Player] = List()
 	
-	def add(name: String) = {
-		all = Player(name, TokenGenerator.randomAlphanumericString(12)) :: all	
+	def add(name: String): String = {
+		var t = TokenGenerator.randomAlphanumericString(12) 
+		all = Player(name, t) :: all
+		t
+	}
+
+	def get(t: String): Option[Player] = {
+		// passes back the first
+		all find (_.token == t) 
 	}
 }
 

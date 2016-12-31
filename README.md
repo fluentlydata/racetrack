@@ -1,12 +1,2 @@
-# racetrack #
-
-## Build & Run ##
-
-```sh
-$ cd racetrack
-$ ./sbt
-> jetty:start
-> browse
-```
-
-If `browse` doesn't launch your browser, manually open [http://localhost:8080/](http://localhost:8080/) in your browser.
+# racetrack # 
+A digitalized version of the pan and paper game (https://en.wikipedia.org/wiki/Racetrack_(game))
