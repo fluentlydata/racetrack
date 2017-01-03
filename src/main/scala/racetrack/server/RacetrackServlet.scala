@@ -1,12 +1,11 @@
 package racetrack
 
-import racetrack.server.Controller
-import racetrack.server.model._
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
 import org.scalatra.json._
+import racetrack.server.Controller
+import racetrack.server.model._
 
-// todo: general, proper error handling
 class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
 
   protected implicit lazy val jsonFormats: Formats = DefaultFormats.withBigDecimal
@@ -24,20 +23,34 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
     PlayerData.all
   }
 
+  get("/player/:token") {
+    PlayerData.get(params("token")) match {
+      case Some(player) => Ok(player)
+      case None         => NotFound(ErrorResponse("No such player found."))
+    }
+  }
+
   get("/car") {
     CarData.all
   }
 
-  post("/move") {
-    val req = parsedBody.extract[MoveRequest]
-    val player = PlayerData.get(req.token)
-    if (player.nonEmpty) {
-      val car = CarData.get(req.token) get // todo no proper error handling
+  get("/car/:token") {
+    CarData.get(params("token")) match {
+      case Some(car) => Ok(car)
+      case None         => NotFound(ErrorResponse("No such car found."))
+    }
+  }
+
+  post("/car/move/:token") {
+    def moveCar(car: Car) = {
+      val req = parsedBody.extract[MoveRequest]
       val res = Controller.move(car, (req.x, req.y))
-      MoveResponse(res)
-    } else {
-      MoveResponse(false)
-      // todo: 404
+      MoveResponse(x = res._1._1, y = res._1._2, status = res._2)
+    }
+
+    CarData.get(params("token")) match {
+      case Some(car) => Ok(moveCar(car))
+      case None      => NotFound(ErrorResponse("The token has not been found in the car list. Probably the game has not started yet."))
     }
   }
 
@@ -66,6 +79,8 @@ case class PlayerRequest(name: String)
 
 case class PlayerPostResponse(token: String)
 
-case class MoveRequest(token: String, x: Int, y: Int)
+case class MoveRequest(x: Int, y: Int)
 
-case class MoveResponse(status: Boolean)
+case class MoveResponse(x: Int, y: Int, status: String)
+
+case class ErrorResponse(message: String)

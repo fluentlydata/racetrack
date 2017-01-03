@@ -7,7 +7,7 @@ object Controller {
 	type Vec = (Int, Int)
 
 	// moves a car, returns new pos and whether an error occured
-	def move(car: Car, pos: Vec): Boolean = {
+	def move(car: Car, pos: Vec): (Vec, String) = {
 		val c = add(car.pos, car.vec)
 		val validFields = for {
 			x <- -1 to 1
@@ -18,9 +18,9 @@ object Controller {
 
 		if (validFields contains pos) {
 			CarData.update(car.token, pos, sub(pos, car.pos))
-			true
+			(pos, "Moved car to new position.")
 		} else {
-			false
+			(car.pos, "Invalid move request.")
 		}
 	}
 
