@@ -14,15 +14,24 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
     contentType = formats("json")
   }
 
+  /**
+    * adds a new player to the global list of players.
+    */
   post("/player") {
-    var t = PlayerData.add(parsedBody.extract[PlayerRequest].name)
-    PlayerPostResponse(t)
+    val t = PlayerData.add(parsedBody.extract[PlayerRequest].name)
+    PlayerResponse(t)
   }
 
+  /**
+    * returns a list of all players.
+    */
   get("/player") {
     PlayerData.all
   }
 
+  /**
+    * returns information to the requested player.
+    */
   get("/player/:token") {
     PlayerData.get(params("token")) match {
       case Some(player) => Ok(player)
@@ -30,10 +39,16 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
     }
   }
 
+  /**
+    * returns a list of all cars in the current game.
+    */
   get("/car") {
     CarData.all
   }
 
+  /**
+    * returns information to the requested car.
+    */
   get("/car/:token") {
     CarData.get(params("token")) match {
       case Some(car) => Ok(car)
@@ -41,11 +56,14 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
     }
   }
 
+  /**
+    * moves a car to the given position if the move is valid.
+    */
   post("/car/move/:token") {
     def moveCar(car: Car) = {
       val req = parsedBody.extract[MoveRequest]
       val res = Controller.move(car, (req.x, req.y))
-      MoveResponse(x = res._1._1, y = res._1._2, status = res._2)
+      MoveResponse(x = res._1._1, y = res._1._2, message = res._2)
     }
 
     CarData.get(params("token")) match {
@@ -54,33 +72,76 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
     }
   }
 
-  get("/start") {
-    Controller.startGame
+  /**
+    * starts a game with a selection of players and a track.
+    * todo: assigns random start positions to the cars (on the start line)
+    */
+  post("/start") {
+    val req = parsedBody.extract[StartRequest]
+    StartResponse(Controller.startGame(req.player, req.track))
   }
 
+
+  /**
+    * ends a game and deletes all cars.
+    */
   get("/end") {
     Controller.endGame
   }
 
-  post("/track") {
-    // posts a new track to the list of all tracks
-  }
 
+  /**
+    * returns a list of all tracks.
+    */
   get("/track") {
-
+    TrackData.all
   }
 
-  post("/track/:id") {
+  /**
+    * returns information to the requested track.
+    */
+  get("/track/:id") {
+    TrackData.get(params("id").toInt) match {
+      case Some(track) => Ok(track)
+      case None         => NotFound(ErrorResponse("No such track found."))
+    }
+  }
+
+  /**
+    * adds a new track to the list of stored tracks.
+    */
+  post("/track") {
+    val req = parsedBody.extract[TrackRequest]
+    val wall = req.wall map (w => (w.x, w.y))
+    val start = req.start map (s => (s.x, s.y))
+    val finish = req.finish map (f => (f.x, f.y))
+    TrackResponse(TrackData.add(wall, start, finish))
+  }
+
+  /**
+    * registers a listener in order to get notified if another player changes the state of the game.
+    */
+  post("/listener") {
 
   }
 }
 
+case class StartRequest(player: List[String], track: Int)
+
+case class StartResponse(message: String)
+
+case class Pos(x: Int, y: Int)
+
+case class TrackRequest(wall: List[Pos], start: List[Pos], finish: List[Pos])
+
+case class TrackResponse(id: Int)
+
 case class PlayerRequest(name: String)
 
-case class PlayerPostResponse(token: String)
+case class PlayerResponse(token: String)
 
 case class MoveRequest(x: Int, y: Int)
 
-case class MoveResponse(x: Int, y: Int, status: String)
+case class MoveResponse(x: Int, y: Int, message: String)
 
 case class ErrorResponse(message: String)

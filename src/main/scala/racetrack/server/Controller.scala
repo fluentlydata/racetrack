@@ -4,9 +4,11 @@ import racetrack.server.model._
 
 object Controller {
 
+	var activeTrack: Track = _
+
 	type Vec = (Int, Int)
 
-	// moves a car, returns new pos and whether an error occured
+	// moves a car, returns new pos and whether an error occurred
 	def move(car: Car, pos: Vec): (Vec, String) = {
 		val c = add(car.pos, car.vec)
 		val validFields = for {
@@ -27,12 +29,20 @@ object Controller {
 	def add(a: Vec, b: Vec): Vec = (a._1+b._1,a._2+b._2)
 	def sub(a: Vec, b: Vec): Vec = (a._1-b._1,a._2-b._2)
 
-	def startGame = {
-		for (p <- PlayerData.all) CarData.add(p.token, (0,0)) 
+	def startGame(player: List[String], track: Int) = {
+    TrackData.get(track) match {
+      case Some(t) => {
+        activeTrack = t
+        for (p <- player) CarData.add(p, (0,0))
+        "Game started."
+      }
+      case None    => "Couldn't start game. No track ID " + track.toString + " found."
+    }
 	}
 
 	def endGame = {
 		CarData.clear
+    activeTrack = null
 	}
 }
 
