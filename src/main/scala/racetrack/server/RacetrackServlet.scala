@@ -1,6 +1,7 @@
 package racetrack
 
-import model._
+import racetrack.server.Controller
+import racetrack.server.model._
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
 import org.scalatra.json._

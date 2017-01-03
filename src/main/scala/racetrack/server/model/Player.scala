@@ -1,4 +1,4 @@
-package model
+package racetrack.server.model
 
 case class Player(name: String, token: String)
 

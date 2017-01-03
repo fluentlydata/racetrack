@@ -1,6 +1,6 @@
-package racetrack
+package racetrack.server
 
-import model._
+import racetrack.server.model._
 
 object Controller {
 

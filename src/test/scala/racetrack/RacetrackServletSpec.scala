@@ -1,4 +1,4 @@
-package ch.buchter.app
+package racetrack
 
 import org.scalatra.test.specs2._
 import racetrack.RacetrackServlet

@@ -1,6 +1,6 @@
-package model
+package racetrack.server.model
 
-import org.slf4j.{Logger, LoggerFactory}
+import org.slf4j.{LoggerFactory}
 
 case class Car(token: String, pos: (Int, Int), vec: (Int, Int))
 
