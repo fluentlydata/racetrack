@@ -1,4 +1,4 @@
-import racetrack._
+import racetrack.server._
 import org.scalatra._
 import javax.servlet.ServletContext
 

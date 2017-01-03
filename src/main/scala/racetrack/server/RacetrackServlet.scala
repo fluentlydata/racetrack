@@ -1,9 +1,8 @@
-package racetrack
+package racetrack.server
 
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
 import org.scalatra.json._
-import racetrack.server.Controller
 import racetrack.server.model._
 
 class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
@@ -35,7 +34,7 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
   get("/player/:token") {
     PlayerData.get(params("token")) match {
       case Some(player) => Ok(player)
-      case None         => NotFound(ErrorResponse("No such player found."))
+      case None => NotFound(ErrorResponse("No such player found."))
     }
   }
 
@@ -52,7 +51,7 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
   get("/car/:token") {
     CarData.get(params("token")) match {
       case Some(car) => Ok(car)
-      case None         => NotFound(ErrorResponse("No such car found."))
+      case None => NotFound(ErrorResponse("No such car found."))
     }
   }
 
@@ -68,7 +67,7 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
 
     CarData.get(params("token")) match {
       case Some(car) => Ok(moveCar(car))
-      case None      => NotFound(ErrorResponse("The token has not been found in the car list. Probably the game has not started yet."))
+      case None => NotFound(ErrorResponse("The token has not been found in the car list. Probably the game has not started yet."))
     }
   }
 
@@ -103,7 +102,7 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
   get("/track/:id") {
     TrackData.get(params("id").toInt) match {
       case Some(track) => Ok(track)
-      case None         => NotFound(ErrorResponse("No such track found."))
+      case None => NotFound(ErrorResponse("No such track found."))
     }
   }
 
