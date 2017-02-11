@@ -24,7 +24,7 @@ object Controller {
     if (validFields contains pos) {
       CarData.update(car.token, pos, sub(pos, car.pos))
 
-      game.addUpdateForAllExcept("new pos: " + car.pos, car.token)
+      game.addUpdate("new pos: " + car.pos)
 
       (pos, "Moved car to new position.")
     } else {
@@ -56,7 +56,9 @@ object Controller {
     if (game.running) {
       "Game has already started!"
     } else {
+
       game.running = true
+
       startNewsSocket(this.socketPort, this.game)
       addPlayersToTrack
     }

@@ -7,35 +7,34 @@ import scala.collection.mutable.Queue
   * parallelism is only on getting data, not on modifying data, so no lock mechanism is needed.
   */
 class GameState {
-
   var running = false
-  var updates: Map[String, Queue[String]] = Map()
+
+  // we maintain a history of all updates. if a new listener registers, he can enqueue all events and recreate the game state.
+  var history: List[String] = List()
+
+  // key: id of update handler
+  var updates: Map[Int, Queue[String]] = Map()
+
 
   def isRunning: Boolean = {
     true
   }
 
-  def hasUpdate(token: String): Boolean = {
-    if (updates.contains(token)) {
-      updates(token).nonEmpty
-    } else {
-      false
+  def hasUpdate(handlerId: Int): Boolean = {
+    // add new queue for every unknown handlerId
+    if (!updates.contains(handlerId)) {
+      updates += (handlerId -> Queue())
+      for (h <- history) updates(handlerId).enqueue(h)
     }
+    updates(handlerId).nonEmpty
   }
 
-  def getNextUpdate(token: String): String = {
-    updates(token).dequeue()
+  def getNextUpdate(handlerId: Int): String = {
+    updates(handlerId).dequeue()
   }
 
-  def addUpdate(update: String, token: String) = {
-    updates(token).enqueue(update)
-  }
-
-  def addUpdateForAll(update: String): Unit = {
-    for ((_, queue) <- updates) queue.enqueue(update)
-  }
-
-  def addUpdateForAllExcept(update: String, token: String) = {
-    for ((_, queue) <- updates filter (x => x._1 != update)) queue.enqueue(update)
+  def addUpdate(update: String) = {
+    history = update :: history
+    for ((_,queue) <- updates) queue.enqueue(update)
   }
 }
