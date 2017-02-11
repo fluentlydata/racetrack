@@ -18,7 +18,7 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
     */
   post("/player") {
     val t = PlayerData.add(parsedBody.extract[PlayerRequest].name)
-    PlayerResponse(t)
+    PlayerResponse(t, Controller.socketIp, Controller.socketPort)
   }
 
   /**
@@ -77,7 +77,8 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
     */
   post("/start") {
     val req = parsedBody.extract[StartRequest]
-    StartResponse(Controller.startGame(req.player, req.track))
+    val info = Controller.startGame(req.player, req.track)
+    StartResponse(info)
   }
 
 
@@ -116,13 +117,6 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
     val finish = req.finish map (f => (f.x, f.y))
     TrackResponse(TrackData.add(wall, start, finish))
   }
-
-  /**
-    * registers a listener in order to get notified if another player changes the state of the game.
-    */
-  post("/listener") {
-
-  }
 }
 
 case class StartRequest(player: List[String], track: Int)
@@ -137,10 +131,12 @@ case class TrackResponse(id: Int)
 
 case class PlayerRequest(name: String)
 
-case class PlayerResponse(token: String)
+case class PlayerResponse(token: String, ip: String, port: Int)
 
 case class MoveRequest(x: Int, y: Int)
 
 case class MoveResponse(x: Int, y: Int, message: String)
 
 case class ErrorResponse(message: String)
+
+case class ListenerRequest(token: String)
