@@ -24,7 +24,7 @@ object Controller {
     if (validFields contains pos) {
       CarData.update(car.token, pos, sub(pos, car.pos))
 
-      game.addUpdate("new pos: " + car.pos)
+      game.addUpdateForAllExcept("new pos: " + car.pos, car.token)
 
       (pos, "Moved car to new position.")
     } else {

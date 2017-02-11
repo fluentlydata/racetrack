@@ -9,24 +9,33 @@ import scala.collection.mutable.Queue
 class GameState {
 
   var running = false
-  val queue = new Queue[String]
+  var updates: Map[String, Queue[String]] = Map()
 
   def isRunning: Boolean = {
     true
   }
 
-  def hasUpdate(handlerId: Int): Boolean = {
-    queue.nonEmpty
+  def hasUpdate(token: String): Boolean = {
+    if (updates.contains(token)) {
+      updates(token).nonEmpty
+    } else {
+      false
+    }
   }
 
-  def getNextUpdate(handlerId: Int): String = {
-    println("DEBUG: Update requested. Returning: " + queue.front)
-    // todo: proper enqueing
-    queue.front
+  def getNextUpdate(token: String): String = {
+    updates(token).dequeue()
   }
 
-  def addUpdate(update: String) = {
-    queue.enqueue(update)
-    println("DEBUG: GameState: queue: " + queue)
+  def addUpdate(update: String, token: String) = {
+    updates(token).enqueue(update)
+  }
+
+  def addUpdateForAll(update: String): Unit = {
+    for ((_, queue) <- updates) queue.enqueue(update)
+  }
+
+  def addUpdateForAllExcept(update: String, token: String) = {
+    for ((_, queue) <- updates filter (x => x._1 != update)) queue.enqueue(update)
   }
 }
