@@ -28,7 +28,8 @@ class Handler(socket: Socket, handlerId: Int, game: GameState) extends Runnable 
       Thread.sleep(500)
       if (game.hasUpdate(handlerId)) {
         val updateMessage = game.getNextUpdate(handlerId)
-        out.println("{ 'message': '" + updateMessage + "' }")
+        // out.println("{ 'message': '" + updateMessage + "' }")
+        out.println(updateMessage.toString)
         out.flush()
       }
     }

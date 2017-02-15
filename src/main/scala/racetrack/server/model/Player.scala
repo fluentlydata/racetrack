@@ -13,6 +13,7 @@ object PlayerData {
 
   def get(t: String): Option[Player] = {
     // passes back the first
+    println("DEBUG: PlayerData.get(" + t + ")")
     all find (_.token == t)
   }
 }

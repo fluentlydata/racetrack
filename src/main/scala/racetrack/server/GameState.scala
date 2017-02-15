@@ -10,10 +10,10 @@ class GameState {
   var running = false
 
   // we maintain a history of all updates. if a new listener registers, he can enqueue all events and recreate the game state.
-  var history: List[String] = List()
+  var history: List[UpdateMessage] = List()
 
   // key: id of update handler
-  var updates: Map[Int, Queue[String]] = Map()
+  var updates: Map[Int, Queue[UpdateMessage]] = Map()
 
 
   def isRunning: Boolean = {
@@ -29,11 +29,11 @@ class GameState {
     updates(handlerId).nonEmpty
   }
 
-  def getNextUpdate(handlerId: Int): String = {
+  def getNextUpdate(handlerId: Int): UpdateMessage = {
     updates(handlerId).dequeue()
   }
 
-  def addUpdate(update: String) = {
+  def addUpdate(update: UpdateMessage) = {
     history = update :: history
     for ((_,queue) <- updates) queue.enqueue(update)
   }

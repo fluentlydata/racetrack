@@ -65,6 +65,8 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
       MoveResponse(x = res._1._1, y = res._1._2, message = res._2)
     }
 
+    println("DEBUG (route '/move/:token'): " + params("token"))
+
     CarData.get(params("token")) match {
       case Some(car) => Ok(moveCar(car))
       case None => NotFound(ErrorResponse("The token has not been found in the car list. Probably the game has not started yet."))
@@ -77,6 +79,7 @@ class RacetrackServlet extends ScalatraServlet with JacksonJsonSupport {
     */
   post("/start") {
     val req = parsedBody.extract[StartRequest]
+    println("DEBUG (route '/start'): " + req.player)
     val info = Controller.startGame(req.player, req.track)
     StartResponse(info)
   }
