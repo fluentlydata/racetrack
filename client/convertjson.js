@@ -58,3 +58,42 @@ readTextFile("/Users/patrick/dev/racetrack/client/track1.json", function(text) {
   var a = convertToArray(t);
   console.log(a);
 });
+
+
+// ganze Welt immer ohne Player
+var track = [][] ...
+
+var updateHistory = [
+  '{"name": "Patrick", "x": 1, "y": 1}',
+  '{"name": "Patrick", "x": 2, "y": 1}',
+  '{"name": "Patrick", "x": 3, "y": 1}',
+  '{"name": "Patrick", "x": 4, "y": 1}',
+  '{"name": "Patrick", "x": 5, "y": 1}',
+  '{"name": "Patrick", "x": 6, "y": 1}'
+  ...
+];
+
+function loadUpdateMessage() {
+  // get next updateHistory element
+
+  // associate player name with color or image or whatnot
+
+
+
+  // copy the world and draw at the pos (x,y) the car of Patrick, ...
+
+  // jsonToCavas(copyWorld)
+}
+
+
+function jsonToCanvas(jsonString) {
+  // parse string
+  t = JSON.parse(text);
+
+  // json to array
+  convertToArray....
+
+
+  // array to canvas
+
+}
