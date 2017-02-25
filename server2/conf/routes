@@ -4,10 +4,16 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
-# An example controller showing how to use dependency injection
-GET     /count                      controllers.CountController.count
-# An example controller showing how to write asynchronous code
-GET     /message                    controllers.AsyncController.message
+
+GET     /player                     controllers.PlayerController.getPlayer
+POST    /player                     controllers.PlayerController.addPlayer
+
+GET     /ws-test                    controllers.WebsocketController.index
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+# websocket routes
+GET     /echo                       controllers.WebsocketController.wsEcho
+GET     /time                       controllers.WebsocketController.wsTime

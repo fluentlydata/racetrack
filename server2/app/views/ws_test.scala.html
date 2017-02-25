@@ -1,0 +1,27 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Websocket Test</title>
+    <script src='@routes.Assets.versioned("javascripts/websocket.js")' type="text/javascript"></script>
+</head>
+<body>
+
+<form>
+ connection to: <input type="text" id="endpoint" name="endpoint" value="ws://localhost:9000/echo"  style="width: 200px" ><br>
+</form>
+
+<input type="button" onclick="connectToWS()" value="connect to WebSocket endpoint" /><br><br>
+
+<form>
+ message: <input type="text" id="myMessage" name="myMessage" value="hi there!"><br>
+</form>
+
+<input type="button" onclick="sendMsg()" value="Send message" />
+
+<input type="button" onclick="closeConn()" value="Close connection" />
+
+
+</body>
+</html>
