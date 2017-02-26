@@ -8,6 +8,10 @@ GET     /                           controllers.HomeController.index
 GET     /player                     controllers.PlayerController.getPlayer
 POST    /player                     controllers.PlayerController.addPlayer
 
+GET     /start                      controllers.GameController.start
+GET     /car                        controllers.GameController.getAllCars
+GET     /car/:token                 controllers.GameController.getOneCar(token:String)
+
 GET     /ws-test                    controllers.WebsocketController.index
 
 

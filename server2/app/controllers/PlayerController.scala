@@ -1,7 +1,7 @@
 package controllers
 
 import com.google.inject.Inject
-import model.Player
+import model.{Player, PlayerData}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.Json
@@ -12,25 +12,24 @@ import play.api.mvc.{Action, Controller}
   */
 class PlayerController @Inject() extends Controller {
 
-  var players: List[Player] = List()
+  // todo: now, the client needs to send a "token" attribute which is not used...
+  val playerForm: Form[Player] = Form {
+    mapping(
+      "name" -> text,
+      "token" -> text
+    )(Player.apply)(Player.unapply)
+  }
 
   // POST /player
   def addPlayer = Action { implicit request =>
     val player = playerForm.bindFromRequest.get
-    players = player :: players
-    // Redirect(routes.HomeController.index())
-    Ok
+    PlayerData.add(player.name)
+    // players = player :: players
+    Redirect(routes.HomeController.index())
   }
-
-  val playerForm: Form[Player] = Form {
-    mapping(
-    "name" -> text
-    )(Player.apply)(Player.unapply)
-  }
-
 
   // GET /player
   def getPlayer = Action {
-    Ok(Json.toJson(players))
+    Ok(Json.toJson(PlayerData.all))
   }
 }

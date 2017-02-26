@@ -9,6 +9,18 @@
  * argument is a `String` with the title of the page, the second
  * argument is an `Html` object containing the body of the page.
  *@
-@main("Welcome to Play") {
-  <p>This is the content of the page</p>
+@main("Racetrack") {
+  <p>Playerregistration</p>
+
+    <form action="@routes.PlayerController.addPlayer", method="post">
+        <input name="name" type="text">
+        <input name="token" type="text">
+        <button>Register Player</button>
+    </form>
+
+    <form action="@routes.GameController.start", method="get">
+        <button>Start Game</button>
+    </form>
+
+    <ul id="players"></ul>
 }
