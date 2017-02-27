@@ -1,7 +1,9 @@
 package controllers
 
 import com.google.inject.Inject
-import model.{Car, CarData, PlayerData}
+import model.{Car, CarData, Player, PlayerData}
+import play.api.data.Form
+import play.api.data.Forms._
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 
@@ -10,7 +12,16 @@ object CarResponse {
   implicit val carFormat = Json.format[CarResponse]
 }
 
+case class MoveRequest(px: Int, py: Int)
+object MoveRequest {
+  implicit val moveFormat = Json.format[MoveRequest]
+}
+
 class GameController @Inject() extends Controller {
+
+  def index = Action {
+    Ok(views.html.game())
+  }
 
   // GET /car
   def getAllCars = Action {
@@ -26,6 +37,57 @@ class GameController @Inject() extends Controller {
     }
   }
 
+  // moving the car
+  val moveRequestForm: Form[MoveRequest] = Form {
+    mapping(
+      "px" -> number,
+      "py" -> number
+    )(MoveRequest.apply)(MoveRequest.unapply)
+  }
+
+  def move(token: String) = Action { implicit request =>
+    println("MOVE: " + token)
+    val moveRequest = moveRequestForm.bindFromRequest.get
+    CarData.get(token) match {
+      case Some(car) => moveAndUpdate(car, (moveRequest.px, moveRequest.py))
+      case None      => println("Error: no car with token " + token + " found.")
+    }
+
+    Redirect(routes.GameController.index())
+  }
+
+  type Vec = (Int, Int)
+
+  // moves a car, returns new pos and whether an error occurred
+  def moveAndUpdate(car: Car, newPos: Vec) = {
+    val c = add(car.pos, car.vel)
+    val validFields = for {
+      x <- -1 to 1
+      y <- -1 to 1
+    } yield add(c, (x, y))
+
+    println("car.token: " + car.token + " || car.pos: " + car.pos + " || new pos: " + newPos + " || car.vec: " + car.vel)
+
+    if (validFields contains newPos) {
+      CarData.update(car.playerName, car.token, newPos, sub(newPos, car.pos))
+      /*
+      PlayerData.get(car.token) match {
+        case Some(p) => {
+          val m = new UpdateMessage
+          m.add("player", p.name)
+          m.add("pos", newPos)
+          game.addUpdate(m)
+          (newPos, "Moved car to new position.")
+        }
+        case None => (car.pos, "Player does not exist.")
+      }
+      */
+    }
+  }
+
+  def add(a: Vec, b: Vec): Vec = (a._1 + b._1, a._2 + b._2)
+
+  def sub(a: Vec, b: Vec): Vec = (a._1 - b._1, a._2 - b._2)
 
   /*
   post("/car/move/:token") {
@@ -54,7 +116,7 @@ class GameController @Inject() extends Controller {
     // val info = startGame(req.player, req.track)
 
     for (p <- PlayerData.all) CarData.add(p.name, p.token, (0, 0))
-    Ok(views.html.game())
+    Redirect(routes.GameController.index())
   }
 
 }

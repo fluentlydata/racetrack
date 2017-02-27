@@ -19,7 +19,9 @@ if (window.console) {
   $(function() {
     return $.get("/car", function(cars) {
       return $.each(cars, function(index, car) {
-        return $("#cars").append($("<li>").text(car.name + " at pos: (" + car.px + "," + car.py + ") and with velocity: (" + car.vx + "," + car.vy + ")"));
+        return $("#cars").append(
+            $("<li>").text(car.name + " at pos: (" + car.px + "," + car.py + ") and with velocity: (" + car.vx + "," + car.vy + ")")
+        );
       });
     });
   });

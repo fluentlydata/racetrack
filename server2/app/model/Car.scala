@@ -11,6 +11,7 @@ object CarData {
   val logger = LoggerFactory.getLogger(getClass)
 
   def add(playerName: String, token: String, pos: (Int, Int)) = {
+    println("adding car: " + token)
     all = Car(playerName, token, pos, (0, 0)) :: all
   }
 
