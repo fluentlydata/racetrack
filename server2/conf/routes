@@ -14,8 +14,10 @@ GET     /car                        controllers.GameController.getAllCars
 GET     /car/:token                 controllers.GameController.getOneCar(token:String)
 POST    /move/:token                controllers.GameController.move(token:String)
 
-GET     /ws-test                    controllers.WebsocketController.index
+GET     /track                      controllers.GameController.getAllTracks
+GET     /track/:id                  controllers.GameController.getTrack(id:Int)
 
+GET     /ws-test                    controllers.WebsocketController.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

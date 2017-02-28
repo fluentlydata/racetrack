@@ -1,7 +1,7 @@
 package controllers
 
 import com.google.inject.Inject
-import model.{Car, CarData, Player, PlayerData}
+import model._
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.Json
@@ -15,6 +15,11 @@ object CarResponse {
 case class MoveRequest(px: Int, py: Int)
 object MoveRequest {
   implicit val moveFormat = Json.format[MoveRequest]
+}
+
+case class TrackResponse(id: Int, wx: List[Int], wy: List[Int], fx: List[Int], fy: List[Int], sx: List[Int], sy: List[Int])
+object TrackResponse {
+  implicit val trackFormat = Json.format[TrackResponse]
 }
 
 class GameController @Inject() extends Controller {
@@ -117,6 +122,53 @@ class GameController @Inject() extends Controller {
 
     for (p <- PlayerData.all) CarData.add(p.name, p.token, (0, 0))
     Redirect(routes.GameController.index())
+  }
+
+  /**
+    * returns a list of all tracks.
+    */
+  def getAllTracks = Action {
+    val tracks = TrackData.all map (t => convertToTrackResponse(t))
+    Ok(Json.toJson(tracks))
+  }
+
+  /**
+    * returns information to the requested track.
+    */
+  def getTrack(id: Int) = Action {
+    TrackData.get(id) match {
+      case Some(track) => Ok(Json.toJson(convertToTrackResponse(track)))
+      case None => NotFound("No such track found.")
+    }
+  }
+
+  def convertToTrackResponse(track: Track): TrackResponse = {
+    // todo: quite repetitive..
+    val wxs = for {
+      wall <- track.wall
+    } yield wall._1
+
+    val wys = for {
+      wall <- track.wall
+    } yield wall._2
+
+    val fxs = for {
+      finish <- track.finish
+    } yield finish._1
+
+    val fys = for {
+      finish <- track.finish
+    } yield finish._2
+
+    val sxs = for {
+      start <- track.start
+    } yield start._1
+
+    val sys = for {
+      start <- track.start
+    } yield start._2
+
+    TrackResponse(track.id, wxs, wys, fxs, fys, sxs, sys)
   }
 
 }
