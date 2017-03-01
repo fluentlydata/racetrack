@@ -4,7 +4,7 @@ import play.api.libs.json.Json
 
 case class Field(x: Int, y: Int, t: Int)
 object Field {
-  implicit val fieldFormat = Json.format[Track]
+  implicit val fieldFormat = Json.format[Field]
 }
 
 case class Track(id: Int, fields: List[Field])

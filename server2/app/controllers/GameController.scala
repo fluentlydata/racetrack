@@ -17,14 +17,6 @@ object MoveRequest {
   implicit val moveFormat = Json.format[MoveRequest]
 }
 
-case class FieldResponse(x: Int, y: Int, t: Int)
-object FieldResponse {
-  implicit val fieldFormat = Json.format[FieldResponse]
-}
-
-case class TrackResponse(id: Int, fields: List[FieldResponse])
-
-
 class GameController @Inject() extends Controller {
 
   def index = Action {

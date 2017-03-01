@@ -7,54 +7,45 @@ function convertToArray(json) {
   var a = [];
 
   // first find out the size of the field
-  var maxRow = 0;
-  var maxCol = 0;
+  var height = 0;
+  var width = 0;
   json["fields"].forEach(function(f) {
     var x = f["x"];
     var y = f["y"];
-    if (x>maxCol) maxCol = x
-    if (x>maxRow) maxRow = y
+    if (x>width) width = x
+    if (y>height) height = y
   });
 
+  // highest value + 1 => dimension
+  height = height + 1;
+  width = width + 1;
+  console.log("height: " + height)
+  console.log("width: " + width)
+
   // initialize a
-  for (row=0;row<maxRow;row++) {
-    a.push(new Array(maxCol));
-    for (col=0;col<maxCol;col++) {
+  for (row=0;row<height;row++) {
+    a.push(new Array(width));
+    for (col=0;col<width;col++) {
       a[row][col] = 0;
     }
   }
 
+  console.log("after zero-initialization: ");
   console.log(a);
 
   // fill a with proper data
   json["fields"].forEach(function(f) {
+    console.log(f)
     var col = f["x"];
     var row = f["y"];
-    var t = f["type"];
-    a[row][col] = t;
+    a[row][col] = f["t"];
   });
+
+  return a;
 }
 
 
-// todo
-function drawTrack(id) {
-    // get /track/0
-    $.get("/track/" + id, function(track) {
-        // format: id: Int, wx: List[Int], wy: List[Int], fx: List[Int], fy: List[Int], sx: List[Int], sy: List[Int]
-        console.log(track);
-
-
-    });
-
-
-    // convert it to an 2d array
-    var field = [
-                    [1,2,2,3],
-                    [0,0,0,0],
-                    [1,1,1,1]
-                ];
-
-    // draw track
+function drawCanvas(track) {
     var c=document.getElementById("myCanvas");
     var ctx=c.getContext("2d");
     var block = 20;
@@ -84,23 +75,43 @@ function drawTrack(id) {
       ctx.strokeRect(x*block, y*block, block, block);
     }
 
-    for(var n=0; n<=field.length; n++){
-      for(var m=0; m<=field[0].length; m++){
-        if(field[n][m]==0){
-          racetrack(m, n);
+    var height = track.length
+    var width  = track[0].length
+    console.log("track height: " + height)
+    console.log("track width: " + width)
+
+
+    for(var row=0; row < height; row++){
+      for(var col=0; col < width; col++){
+
+        console.log("(track["+row+"]["+col+"])" + track[row][col])
+
+        if(track[row][col]==0){
+          racetrack(col, row);
         }
-        else if (field[n][m]==1) {
-          border(m, n);
+        else if (track[row][col]==1) {
+          border(col, row);
         }
-        else if (field[n][m]==2) {
-          startline(m, n);
+        else if (track[row][col]==2) {
+          startline(col, row);
         }
         else {
-          finishline(m, n);
+          finishline(col, row);
         }
       }
     }
+}
 
+function drawTrack(id) {
+
+    // get /track/0
+    $.get("/track/" + id, function(t) {
+        // format: id: Int, wx: List[Int], wy: List[Int], fx: List[Int], fy: List[Int], sx: List[Int], sy: List[Int]
+        console.log(t);
+        track = convertToArray(t);
+        console.log(track);
+        drawCanvas(track);
+    });
 }
 
 function drawTest() {
