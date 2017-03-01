@@ -37,6 +37,15 @@ class GameController @Inject() extends Controller {
     }
   }
 
+  // todo: remove (GET /car/test)
+  def getTestCar = Action {
+    CarData.add("test", "test", (1,0))
+    CarData.get("test") match {
+      case Some(car) => Ok(Json.toJson(CarResponse(car.playerName, car.token, car.pos._1, car.pos._2, car.vel._1, car.vel._2)))
+      case None => NotFound("No such car found.")
+    }
+  }
+
   // moving the car
   val moveRequestForm: Form[MoveRequest] = Form {
     mapping(

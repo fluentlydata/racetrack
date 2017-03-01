@@ -5,13 +5,17 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
 
-GET     /player                     controllers.PlayerController.getPlayer
+GET     /player                     controllers.PlayerController.getAllPlayers
+GET     /player/:token              controllers.PlayerController.getPlayer(token:String)
 POST    /player                     controllers.PlayerController.addPlayer
 
 GET     /game                       controllers.GameController.index
 GET     /start                      controllers.GameController.start
+
 GET     /car                        controllers.GameController.getAllCars
+GET     /car/test                   controllers.GameController.getTestCar
 GET     /car/:token                 controllers.GameController.getOneCar(token:String)
+
 POST    /move/:token                controllers.GameController.move(token:String)
 
 GET     /track                      controllers.GameController.getAllTracks

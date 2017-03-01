@@ -1,7 +1,12 @@
+// global variable (todo: change)
+var blockSize = 0
+
 
 /*
- * json example {id: 0, fields: [{x: 1, y: 2, type: 0}]}
- * todo
+ * this function take an array of the following format:
+ * {id: 0, fields: [{x: 1, y: 2, type: 0}]}
+ * and returns an 2-dimensional array, e.g.
+ * [[1,1,1], [2,2,2], [2,2,2]] (3x3 array with ones in first row, twos in second and so on...)
  */
 function convertToArray(json) {
   var a = [];
@@ -19,10 +24,8 @@ function convertToArray(json) {
   // highest value + 1 => dimension
   height = height + 1;
   width = width + 1;
-  console.log("height: " + height)
-  console.log("width: " + width)
 
-  // initialize a
+  // initialize a with zeros
   for (row=0;row<height;row++) {
     a.push(new Array(width));
     for (col=0;col<width;col++) {
@@ -30,10 +33,7 @@ function convertToArray(json) {
     }
   }
 
-  console.log("after zero-initialization: ");
-  console.log(a);
-
-  // fill a with proper data
+  // fill a with correct type data
   json["fields"].forEach(function(f) {
     console.log(f)
     var col = f["x"];
@@ -44,88 +44,91 @@ function convertToArray(json) {
   return a;
 }
 
+function setBlockSize(id) {
+    var canvas = document.getElementById("myCanvas");
+    var cw = canvas.width;
+    var ch = canvas.height;
+    var ctx = canvas.getContext("2d");
 
-function drawCanvas(track) {
-    var c=document.getElementById("myCanvas");
-    var ctx=c.getContext("2d");
-    var block = 20;
+    // get track as json
+    $.get("/track/" + id, function(t) {
+        track = convertToArray(t);
+        var height = track.length
+        var width  = track[0].length
+        var blockWidth = cw/width;
+        var blockHeight = cw/height;
+        blockSize = blockWidth < blockHeight ? blockWidth : blockHeight;
 
-    var border = function(x,y){
-      ctx.fillStyle = '#c6c6c6';
-      ctx.fillRect(x*block, y*block, block, block);
-      ctx.strokeRect(x*block, y*block, block, block);
-      ctx.strokeStyle = "#999";
-    }
+        console.log("track height: " + height)
+        console.log("track width: "  + width)
+        console.log("block size: "   + blockSize)
+    });
+}
 
-    var racetrack = function(x,y){
-      ctx.fillStyle = '#e5e5e5';
-      ctx.fillRect(x*block, y*block, block, block);
-      ctx.strokeRect(x*block, y*block, block, block);
-    }
-
-    var startline = function(x,y){
-      ctx.fillStyle = '#e0ffe7';
-      ctx.fillRect(x*block, y*block, block, block);
-      ctx.strokeRect(x*block, y*block, block, block);
-    }
-
-    var finishline = function(x,y){
-      ctx.fillStyle = '#ffe0e0';
-      ctx.fillRect(x*block, y*block, block, block);
-      ctx.strokeRect(x*block, y*block, block, block);
-    }
+/*
+ * draws track (static background) on canvas
+ */
+function drawBackgroundCanvas(track) {
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
 
     var height = track.length
     var width  = track[0].length
-    console.log("track height: " + height)
-    console.log("track width: " + width)
 
+    var styleMap = {
+        0: '#e5e5e5', // race floor
+        1: '#c6c6c6', // border/wall
+        2: '#e0ffe7', // start line
+        3: '#ffe0e0'  // finish line
+    }
 
-    for(var row=0; row < height; row++){
-      for(var col=0; col < width; col++){
+    function draw(x,y,t) {
+          ctx.fillStyle = styleMap[t];
+          ctx.fillRect(x*blockSize, y*blockSize, blockSize, blockSize);
+          ctx.strokeRect(x*blockSize, y*blockSize, blockSize, blockSize);
+    }
 
-        console.log("(track["+row+"]["+col+"])" + track[row][col])
-
-        if(track[row][col]==0){
-          racetrack(col, row);
-        }
-        else if (track[row][col]==1) {
-          border(col, row);
-        }
-        else if (track[row][col]==2) {
-          startline(col, row);
-        }
-        else {
-          finishline(col, row);
-        }
+    for(var row=0; row < height; row++) {
+      for(var col=0; col < width; col++) {
+        draw(row, col, track[row][col]);
       }
     }
 }
 
-function drawTrack(id) {
+function drawCar(token) {
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
 
-    // get /track/0
-    $.get("/track/" + id, function(t) {
-        // format: id: Int, wx: List[Int], wy: List[Int], fx: List[Int], fy: List[Int], sx: List[Int], sy: List[Int]
-        console.log(t);
-        track = convertToArray(t);
-        console.log(track);
-        drawCanvas(track);
+    function draw(x,y) {
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(x*blockSize, y*blockSize, blockSize, blockSize);
+    }
+
+    $.get("/car/" + token, function(c) {
+        var x = c["px"]
+        var y = c["py"]
+        console.log("draw car at pos (x|y): (" + x + "|" + y + ")")
+        draw(x,y);
     });
 }
 
-function drawTest() {
-    var c = document.getElementById("myCanvas");
-    var ctx = c.getContext("2d");
-    ctx.moveTo(0,0);
-    ctx.lineTo(200,100);
-    ctx.stroke();
+function drawBackground(id) {
+    $.get("/track/" + id, function(t) {
+        track = convertToArray(t);
+        drawBackgroundCanvas(track);
+    });
 }
 
 function initialize() {
 
-    // drawTest();
-    drawTrack(0);
+    // todo: testing...
+    var trackId = 0;
+    var token   = "test";
+
+    setBlockSize(trackId);
+
+    drawBackground(trackId);
+    drawCar(token);
 }
 
 window.onload = initialize

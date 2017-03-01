@@ -29,7 +29,14 @@ class PlayerController @Inject() extends Controller {
   }
 
   // GET /player
-  def getPlayer = Action {
+  def getAllPlayers = Action {
     Ok(Json.toJson(PlayerData.all))
+  }
+
+  def getPlayer(token:String) = Action {
+    PlayerData.get(token) match {
+      case Some(player) => Ok(Json.toJson(player))
+      case None         => NotFound
+    }
   }
 }
