@@ -17,10 +17,13 @@ object MoveRequest {
   implicit val moveFormat = Json.format[MoveRequest]
 }
 
-case class TrackResponse(id: Int, wx: List[Int], wy: List[Int], fx: List[Int], fy: List[Int], sx: List[Int], sy: List[Int])
-object TrackResponse {
-  implicit val trackFormat = Json.format[TrackResponse]
+case class FieldResponse(x: Int, y: Int, t: Int)
+object FieldResponse {
+  implicit val fieldFormat = Json.format[FieldResponse]
 }
+
+case class TrackResponse(id: Int, fields: List[FieldResponse])
+
 
 class GameController @Inject() extends Controller {
 
@@ -128,8 +131,7 @@ class GameController @Inject() extends Controller {
     * returns a list of all tracks.
     */
   def getAllTracks = Action {
-    val tracks = TrackData.all map (t => convertToTrackResponse(t))
-    Ok(Json.toJson(tracks))
+    Ok(Json.toJson(TrackData.all))
   }
 
   /**
@@ -137,38 +139,9 @@ class GameController @Inject() extends Controller {
     */
   def getTrack(id: Int) = Action {
     TrackData.get(id) match {
-      case Some(track) => Ok(Json.toJson(convertToTrackResponse(track)))
+      case Some(track) => Ok(Json.toJson(track))
       case None => NotFound("No such track found.")
     }
-  }
-
-  def convertToTrackResponse(track: Track): TrackResponse = {
-    // todo: quite repetitive..
-    val wxs = for {
-      wall <- track.wall
-    } yield wall._1
-
-    val wys = for {
-      wall <- track.wall
-    } yield wall._2
-
-    val fxs = for {
-      finish <- track.finish
-    } yield finish._1
-
-    val fys = for {
-      finish <- track.finish
-    } yield finish._2
-
-    val sxs = for {
-      start <- track.start
-    } yield start._1
-
-    val sys = for {
-      start <- track.start
-    } yield start._2
-
-    TrackResponse(track.id, wxs, wys, fxs, fys, sxs, sys)
   }
 
 }

@@ -1,6 +1,51 @@
 
-function drawTrack() {
+/*
+ * json example {id: 0, fields: [{x: 1, y: 2, type: 0}]}
+ * todo
+ */
+function convertToArray(json) {
+  var a = [];
+
+  // first find out the size of the field
+  var maxRow = 0;
+  var maxCol = 0;
+  json["fields"].forEach(function(f) {
+    var x = f["x"];
+    var y = f["y"];
+    if (x>maxCol) maxCol = x
+    if (x>maxRow) maxRow = y
+  });
+
+  // initialize a
+  for (row=0;row<maxRow;row++) {
+    a.push(new Array(maxCol));
+    for (col=0;col<maxCol;col++) {
+      a[row][col] = 0;
+    }
+  }
+
+  console.log(a);
+
+  // fill a with proper data
+  json["fields"].forEach(function(f) {
+    var col = f["x"];
+    var row = f["y"];
+    var t = f["type"];
+    a[row][col] = t;
+  });
+}
+
+
+// todo
+function drawTrack(id) {
     // get /track/0
+    $.get("/track/" + id, function(track) {
+        // format: id: Int, wx: List[Int], wy: List[Int], fx: List[Int], fy: List[Int], sx: List[Int], sy: List[Int]
+        console.log(track);
+
+
+    });
+
 
     // convert it to an 2d array
     var field = [
@@ -40,7 +85,7 @@ function drawTrack() {
     }
 
     for(var n=0; n<=field.length; n++){
-      for(var m=0; m<=field[n].length; m++){
+      for(var m=0; m<=field[0].length; m++){
         if(field[n][m]==0){
           racetrack(m, n);
         }
@@ -69,7 +114,7 @@ function drawTest() {
 function initialize() {
 
     // drawTest();
-    drawTrack();
+    drawTrack(0);
 }
 
 window.onload = initialize
