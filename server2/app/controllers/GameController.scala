@@ -39,10 +39,12 @@ class GameController @Inject() extends Controller {
 
   // todo: remove (GET /car/test)
   def getTestCar = Action {
-    CarData.add("test", "test", (1,0))
     CarData.get("test") match {
       case Some(car) => Ok(Json.toJson(CarResponse(car.playerName, car.token, car.pos._1, car.pos._2, car.vel._1, car.vel._2)))
-      case None => NotFound("No such car found.")
+      case None => {
+        CarData.add("test", "test", (0,1))
+        Ok(Json.toJson(CarResponse("test", "test", 0, 1, 0, 0)))
+      }
     }
   }
 
@@ -54,6 +56,7 @@ class GameController @Inject() extends Controller {
     )(MoveRequest.apply)(MoveRequest.unapply)
   }
 
+  // POST    /move/:token
   def move(token: String) = Action { implicit request =>
     println("MOVE: " + token)
     val moveRequest = moveRequestForm.bindFromRequest.get
@@ -79,6 +82,9 @@ class GameController @Inject() extends Controller {
 
     if (validFields contains newPos) {
       CarData.update(car.playerName, car.token, newPos, sub(newPos, car.pos))
+
+      // todo: send UpdateMessage through Websocket
+
       /*
       PlayerData.get(car.token) match {
         case Some(p) => {

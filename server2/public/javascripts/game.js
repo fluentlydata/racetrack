@@ -119,6 +119,15 @@ function drawBackground(id) {
     });
 }
 
+function moveTestCar() {
+    // Post to /move/test with jquery
+    $.get("/car/test", function(c) {
+        var x = c["px"]
+        var y = c["py"]
+        $.post("/move/test", {"px": x+1, "py": y})
+    });
+}
+
 function initialize() {
 
     // todo: testing...
@@ -126,8 +135,9 @@ function initialize() {
     var token   = "test";
 
     setBlockSize(trackId);
-
+    for (var i=0;i<10000;i++)
     drawBackground(trackId);
+    for (var i=0;i<10000;i++)
     drawCar(token);
 }
 
