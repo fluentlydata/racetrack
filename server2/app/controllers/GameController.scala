@@ -83,20 +83,10 @@ class GameController @Inject() extends Controller {
     if (validFields contains newPos) {
       CarData.update(car.playerName, car.token, newPos, sub(newPos, car.pos))
 
-      // todo: send UpdateMessage through Websocket
-
-      /*
-      PlayerData.get(car.token) match {
-        case Some(p) => {
-          val m = new UpdateMessage
-          m.add("player", p.name)
-          m.add("pos", newPos)
-          game.addUpdate(m)
-          (newPos, "Moved car to new position.")
-        }
-        case None => (car.pos, "Player does not exist.")
-      }
-      */
+      val m = new UpdateMessage
+      m.add("player", car.playerName)
+      m.add("pos", newPos)
+      GameState.addUpdate(m)
     }
   }
 

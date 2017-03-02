@@ -29,3 +29,4 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 # websocket routes
 GET     /echo                       controllers.WebsocketController.wsEcho
 GET     /time                       controllers.WebsocketController.wsTime
+GET     /register                   controllers.WebsocketController.registerListener

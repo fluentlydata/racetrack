@@ -1,6 +1,40 @@
 // global variable (todo: change)
 var blockSize = 0
+var cx = -1
+var cy = -1
 
+function connectToWS(trackId, token) {
+    var ws = new WebSocket("ws://localhost:9000/register");
+
+    ws.onopen = function(evt) {
+        console.log("connected to websocket server");
+    };
+
+    ws.onmessage = function(event) {
+
+        $.get("/car/test", function(c) {
+            var x = c["px"]
+            var y = c["py"]
+
+            // only update if car pos changed
+            if (cx != x | cy != y) {
+
+                // redraw everything with new posiiton
+                drawBackground(trackId);
+                for (var i=0;i<10000;i++)
+                drawCar(token);
+
+                // update current coordinates
+                cx = x;
+                cy = y;
+            }
+        });
+    }
+
+    ws.onerror = function(evt) {
+        console.log("Error!");
+    };
+}
 
 /*
  * this function take an array of the following format:
@@ -133,6 +167,8 @@ function initialize() {
     // todo: testing...
     var trackId = 0;
     var token   = "test";
+
+    connectToWS(trackId, token);
 
     setBlockSize(trackId);
     for (var i=0;i<10000;i++)
