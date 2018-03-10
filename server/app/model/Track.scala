@@ -1,6 +1,8 @@
 package model
 
-import play.api.libs.json.Json
+import java.io.FileInputStream
+
+import play.api.libs.json.{JsValue, Json}
 
 case class Field(x: Int, y: Int, t: Int)
 object Field {
@@ -25,6 +27,13 @@ object TrackData {
   def get(id: Int): Option[Track] = {
     // passes back the first
     all find (_.id == id)
+  }
+
+  def readFromJson(jsonPath: String): JsValue = {
+    println("reading from: " + jsonPath)
+    val stream = new FileInputStream(jsonPath)
+    val json = try {  Json.parse(stream) } finally { stream.close() }
+    json
   }
 }
 

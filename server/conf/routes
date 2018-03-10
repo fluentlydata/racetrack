@@ -5,6 +5,9 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
 
+# test whether a json file can be read
+GET     /readtrack/:track           controllers.GameController.readJsonTrack(track:String)
+
 GET     /player                     controllers.PlayerController.getAllPlayers
 GET     /player/:token              controllers.PlayerController.getPlayer(token:String)
 POST    /player                     controllers.PlayerController.addPlayer

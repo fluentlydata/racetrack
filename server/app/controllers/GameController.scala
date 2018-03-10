@@ -23,6 +23,13 @@ class GameController @Inject() extends Controller {
     Ok(views.html.game())
   }
 
+  // for testing
+  // GET /readtrack/:track
+  def readJsonTrack(track: String) = Action {
+    val basePath = "/Users/patrick/Dropbox/friends/Bro/client/"
+    Ok(TrackData.readFromJson(basePath + track))
+  }
+
   // GET /car
   def getAllCars = Action {
     val cars = CarData.all map (car => CarResponse(car.playerName, car.token, car.pos._1, car.pos._2, car.vel._1, car.vel._2))
